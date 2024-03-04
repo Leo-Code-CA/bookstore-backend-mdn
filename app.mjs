@@ -54,3 +54,5 @@ export default app;
 // STOPPED AT Express Tutorial Part 3: Using a Database (with Mongoose)
 // Connection to mandodb with mangoose
 // # Connecting to MongoDB
+
+node populatedb "mongodb://127.0.0.1:27017/bookstoredb"
