@@ -50,3 +50,7 @@ app.use(function (err, req, res, next) {
 });
 
 export default app;
+
+// START BACK AT #Book detail page
+// 9. of tutorial part 5
+// https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Displaying_data

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import { DateTime } from 'luxon';
 
 const BookInstanceSchema = mongoose.Schema({
 	book: {
@@ -14,7 +15,7 @@ const BookInstanceSchema = mongoose.Schema({
 		type: String,
 		enum: ['Available', 'Loaned', 'Reserved', 'Maintenance'],
 		required: true,
-		default: 'Mainteance',
+		default: 'Maintenance',
 	},
 	due_back: {
 		type: Date,
@@ -24,6 +25,10 @@ const BookInstanceSchema = mongoose.Schema({
 
 BookInstanceSchema.virtual('url').get(function () {
 	return `/catalog/bookinstance/${this._id}`;
+});
+
+BookInstanceSchema.virtual('due_back_formatted').get(function () {
+	return DateTime.fromJSDate(this.due_back).toLocaleString(DateTime.DATE_MED);
 });
 
 export const BookInstance = mongoose.model('BookInstance', BookInstanceSchema);
