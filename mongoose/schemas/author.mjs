@@ -32,16 +32,10 @@ AuthorSchema.virtual('url').get(function () {
 	return `/catalog/author/${this._id}`;
 });
 
-AuthorSchema.virtual('dob_formatted').get(function () {
-	return this.date_of_birth ?
-			DateTime.fromJSDate(this.date_of_birth).toLocaleString(DateTime.DATE_MED)
-		:	'';
-});
-
-AuthorSchema.virtual('dod_formatted').get(function () {
-	return this.date_of_death ?
-			DateTime.fromJSDate(this.date_of_death).toLocaleString(DateTime.DATE_MED)
-		:	'';
-});
+AuthorSchema.virtual('lifespan').get(function () {
+	const dob = this.date_of_birth ? DateTime.fromJSDate(this.date_of_birth).toLocaleString(DateTime.DATE_MED) : 'unknown';
+	const dod = this.date_of_death ? DateTime.fromJSDate(this.date_of_death).toLocaleString(DateTime.DATE_MED) : 'now';
+	return `${dob} - ${dod}`;
+})
 
 export const Author = mongoose.model('Author', AuthorSchema);

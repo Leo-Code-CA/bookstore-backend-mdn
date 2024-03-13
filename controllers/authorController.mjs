@@ -1,4 +1,5 @@
 import { Author } from './../mongoose/schemas/author.mjs';
+import { Book } from './../mongoose/schemas/book.mjs';
 import expressAsyncHandler from 'express-async-handler';
 
 // Display list of all authors
@@ -13,7 +14,22 @@ const author_list = expressAsyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific Author.
 const author_detail = expressAsyncHandler(async (req, res, next) => {
-	res.send(`NOT IMPLEMENTED: Author detail: ${req.params.id}`);
+	const [author, allBooksByAuthor] = await Promise.all([
+		Author.findById(req.params.id).exec(),
+		Book.find({ author: req.params.id }, 'title summary').exec()
+	]);
+
+	if (author === null) {
+		const err = new Error('Author not found!');
+		err.status = 404;
+		next(err);
+	}
+
+	res.render('author_detail', {
+		title: 'Author Detail',
+		author: author,
+		author_books: allBooksByAuthor
+	})
 });
 
 // Display Author create form on GET.
