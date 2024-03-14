@@ -1,6 +1,7 @@
 import { Author } from './../mongoose/schemas/author.mjs';
 import { Book } from './../mongoose/schemas/book.mjs';
 import expressAsyncHandler from 'express-async-handler';
+import { body, validationResult, matchedData } from 'express-validator';
 
 // Display list of all authors
 const author_list = expressAsyncHandler(async (req, res, next) => {
@@ -33,14 +34,71 @@ const author_detail = expressAsyncHandler(async (req, res, next) => {
 });
 
 // Display Author create form on GET.
-const author_create_get = expressAsyncHandler(async (req, res, next) => {
-	res.send(`NOT IMPLEMENTED: Author create GET`);
-});
+const author_create_get = (req, res, next) => {
+	return res.render('author_form', { title: 'Create Author'});
+}
 
 // Handle Author create on POST.
-const author_create_post = expressAsyncHandler(async (req, res, next) => {
-	res.send(`NOT IMPLEMENTED: Author create POST`);
-});
+const author_create_post = [
+	// validate and sanitize
+	body('first_name')
+		.trim()
+		.isLength({ min: 1 })
+		.escape()
+		.withMessage('First name must be specified.')
+		.isAlphanumeric()
+		.withMessage("First name shouldn't contain non-alphanumeric characters."), 
+	body('family_name')
+		.trim()
+		.isLength({ min: 1 })
+		.escape()
+		.withMessage("Family name must be specified")
+		.isAlphanumeric()
+		.withMessage("Family name shouldn't contain non-alphanumeric characters"),
+	body('date_of_birth', 'Invalid date of birth')
+		.optional({ values: "falsy" })
+		.isISO8601()
+		.toDate(),
+	body('date_of_death', 'Invalid date of death')
+		.optional({ values: "falsy" })
+		.isISO8601()
+		.toDate(),
+	
+	// process the request
+	expressAsyncHandler(async (req, res, next) => {
+
+		console.log(req.body)
+
+		const errors = validationResult(req.body);
+
+		if (!errors.isEmpty()) {
+			return res.render('author_form', {
+				title: 'Create Author',
+				first_name: req.body.first_name,
+				family_name: req.body.family_name,
+				date_of_birth: req.body.date_of_birth,
+				date_of_death: req.body.date_of_death,
+				errors: errors.array()
+			})
+		}
+
+		const validatedReqData = matchedData(req)
+
+		console.log(validatedReqData)
+
+		const author = new Author({
+			first_name: validatedReqData.first_name,
+			family_name: validatedReqData.family_name,
+			date_of_birth: validatedReqData.date_of_birth,
+			date_of_death: validatedReqData.date_of_death
+		});
+
+		await author.save();
+
+		res.redirect(author.url);
+	
+	})
+];
 
 // Display Author delete form on GET.
 const author_delete_get = expressAsyncHandler(async (req, res, next) => {

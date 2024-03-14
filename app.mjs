@@ -51,6 +51,6 @@ app.use(function (err, req, res, next) {
 
 export default app;
 
-// START BACK AT #Book detail page
-// 9. of tutorial part 5
-// https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Displaying_data
+// START BACK AT view of 4. Create BookInstance form — Defining a page/form to create BookInstance objects.
+// 4. of tutorial part 6
+// https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/forms
