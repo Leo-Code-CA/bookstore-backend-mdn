@@ -14,14 +14,14 @@ block content
                     for author in authors
                         if book 
                             if author._id.toString()===book.author._id.toString()
-                                option(value=author._id select) #{author.name}
+                                option(value=author._id selected) #{author.name}
                             else 
                                 option(value=author._id) #{author.name}
                         else 
                             option(value=author._id) #{author.name}
         div.form-group
             label(for="summary") Summary: 
-                textarea#summary.form-control(placeholder="Summary of the book" name="summary" required value=(book===undefined ? '' : book.summary))
+                textarea#summary.form-control(placeholder="Summary of the book" name="summary" required)= book===undefined ? '' : book.summary
         div.form-group
             label(for="isbn") ISBN: 
                 input#isbn.form-control(type="text" placeholder="ISBN of the book" name="isbn" required value=(book===undefined ? '' : book.isbn))

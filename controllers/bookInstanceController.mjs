@@ -34,7 +34,9 @@ const bookinstance_detail = expressAsyncHandler(async (req, res, next) => {
 
 // Display BookInstance create form on GET.
 const bookinstance_create_get = expressAsyncHandler(async (req, res, next) => {
-	const [allBooks] = await Book.find({}, "title").sort({ title: 1 }).exec();
+	const allBooks = await Book.find({}, "title").sort({ title: 1 }).exec();
+
+	console.log(allBooks);
 	
 	res.render("bookinstance_form", {
 		title: "Create a book copy",
@@ -68,6 +70,8 @@ const bookinstance_create_post = [
 
 		const validatedData = matchedData(req);
 
+		// console.log(validatedData);
+
 		const bookInstance = new BookInstance({
 			book: validatedData.book,
 			imprint: validatedData.imprint,
@@ -97,12 +101,21 @@ const bookinstance_create_post = [
 
 // Display BookInstance delete form on GET.
 const bookinstance_delete_get = expressAsyncHandler(async (req, res, next) => {
-	res.send('NOT IMPLEMENTED: BookInstance delete GET');
+	const bookInstance = await BookInstance.findById(req.params.id).exec();
+
+	if (bookInstance === null) return res.redirect('/catalog/bookinstances');
+
+	res.render("bookinstance_delete", {
+		title: "Delete a Book Copy",
+		book_instance: bookInstance
+	})
 });
 
 // Handle BookInstance delete on POST.
 const bookinstance_delete_post = expressAsyncHandler(async (req, res, next) => {
-	res.send('NOT IMPLEMENTED: BookInstance delete POST');
+	// const bookInstance = await BookInstance.findById(req.params.id).exec();
+	await BookInstance.findByIdAndDelete(req.body.bookinstanceid);
+	res.redirect('/catalog/bookinstances');
 });
 
 // Display BookInstance update form on GET.

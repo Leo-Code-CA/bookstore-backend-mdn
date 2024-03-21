@@ -102,23 +102,104 @@ const author_create_post = [
 
 // Display Author delete form on GET.
 const author_delete_get = expressAsyncHandler(async (req, res, next) => {
-	res.send(`NOT IMPLEMENTED: Author delete GET`);
+	const [author, allBooksByAuthor] = await Promise.all([
+		Author.findById(req.params.id).exec(),
+		Book.find({ author: req.params.id }, "title summary").exec()
+	]);
+
+	if (author === null) res.redirect('/catalog/authors');
+
+	res.render("author_delete", {
+		title: "Delete Author",
+		author: author,
+		author_books: allBooksByAuthor
+	});
 });
 
 // Handle Author delete on POST.
 const author_delete_post = expressAsyncHandler(async (req, res, next) => {
-	res.send(`NOT IMPLEMENTED: Author delete POST`);
+	const [author, allBooksByAuthor] = await Promise.all([
+		Author.findById(req.params.id).exec(),
+		Book.find({ author: req.params.id }, "title summary").exec()
+	])
+
+	if (allBooksByAuthor.length > 0) {
+		return res.render("author_delete", {
+			title: "Delete Author",
+			author: author,
+			author_books: allBooksByAuthor
+		})
+	} else {
+		await Author.findByIdAndDelete(req.body.authorid);
+		res.redirect('/catalog/authors');
+	}
 });
 
 // Display Author update form on GET.
 const author_update_get = expressAsyncHandler(async (req, res, next) => {
-	res.send(`NOT IMPLEMENTED: Author update GET`);
+	const author = await Author.findById(req.params.id).exec();
+
+	if (author === null) {
+		const err = new Error('Author not found.');
+		err.status = 404;
+		next(err);
+	} else {
+		res.render("author_form", {
+			title: 'Update Author',
+			author: author
+		})
+	}
 });
 
 // Handle Author update on POST.
-const author_update_post = expressAsyncHandler(async (req, res, next) => {
-	res.send(`NOT IMPLEMENTED: Author update POST`);
-});
+const author_update_post = [
+	// validation and sanitization
+	body("first_name")
+		.trim()
+		.isLength({ min: 1 })
+		.escape()
+		.withMessage("Must be provided")
+		.isAlphanumeric()
+		.withMessage("Must only contain alphanumeric characters"),
+	body("family_name")
+		.trim()
+		.isLength({ min: 1 })
+		.escape()
+		.withMessage("Must be provided")
+		.isAlphanumeric()
+		.withMessage("Must only contain alphanumeric characters"),
+	body("date_of_birth", "Invalid date of birth")
+		.optional({ values: 'falsy' })
+		.isISO8601()
+		.toDate(),
+	body("date_of_death", "Invalid date of death")
+		.optional({ values: 'falsy' })
+		.isISO8601()
+		.toDate(),
+
+	expressAsyncHandler(async (req, res, next) => {
+	
+		const errors = validationResult(req);
+		const validatedData = matchedData(req);
+		const author = new Author({
+			first_name: validatedData.first_name,
+			family_name: validatedData.family_name,
+			date_of_birth: validatedData.date_of_birth,
+			date_of_death: validatedData.date_of_death,
+			_id: req.params.id
+		});
+
+		if (!errors.isEmpty()) {
+			res.render("author_form", {
+				author: author,
+				errors: errors.array()
+			})
+		} else {
+			const updatedAuthor = await Author.findByIdAndUpdate(req.params.id, author, {});
+			res.redirect(updatedAuthor.url);
+		}
+	})
+];
 
 const author_controller = {
 	author_list,

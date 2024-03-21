@@ -51,6 +51,5 @@ app.use(function (err, req, res, next) {
 
 export default app;
 
-// START BACK AT view of 4. Create BookInstance form — Defining a page/form to create BookInstance objects.
-// 4. of tutorial part 6
+// CHALLENGE tutorial part 6 - UPDATE BookInstance (all the other delete and update are done)
 // https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/forms

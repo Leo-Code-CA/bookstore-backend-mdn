@@ -62,7 +62,7 @@ const genre_create_post = [
 		const reqValidData = matchedData(req);
 		const genre = new Genre({ name: reqValidData.name });
 
-		console.log(reqValidData);
+		// console.log(reqValidData);
 
 		const genreAlreadyExists = await Genre
 			.findOne({ name: reqValidData.name })
@@ -81,23 +81,85 @@ const genre_create_post = [
 
 // Display Genre delete form on GET.
 const genre_delete_get = expressAsyncHandler(async (req, res, next) => {
-	res.send('NOT IMPLEMENTED: Genre delete GET');
+	const [genre, allBooksByGenre] = await Promise.all([
+		Genre.findById(req.params.id).exec(),
+		Book.find({ genre: req.params.id }, "title summary").exec()
+	])
+
+	if (genre === null) return res.redirect('/catalog/genres');
+
+	res.render("genre_delete", {
+		title: "Delete Genre",
+		genre: genre,
+		genre_books: allBooksByGenre
+	})
 });
 
 // Handle Genre delete on POST.
 const genre_delete_post = expressAsyncHandler(async (req, res, next) => {
-	res.send('NOT IMPLEMENTED: Genre delete POST');
+	const [genre, allBooksByGenre] = await Promise.all([
+		Genre.findById(req.params.id).exec(),
+		Book.find({ genre: req.params.id }, "title summary").exec()
+	]);
+
+	if (allBooksByGenre.length > 0) {
+		return res.render("genre_delete", {
+			title: "Delete Genre",
+			genre: genre, // name and id
+			genre_books: allBooksByGenre
+		})
+	} else {
+		await Genre.findByIdAndDelete(req.body.genreid);
+		res.redirect('/catalog/genres');
+	}
 });
 
 // Display Genre update form on GET.
 const genre_update_get = expressAsyncHandler(async (req, res, next) => {
-	res.send('NOT IMPLEMENTED: Genre update GET');
+	const genre = await Genre.findById(req.params.id).exec();
+
+	if (genre === null) {
+		const err = new Error("Genre not found.");
+		err.status = 404;
+		next(err);
+	} else {
+		res.render("genre_form", {
+			title: "Update Genre",
+			genre: genre
+		})
+	}
 });
 
 // Handle Genre update on POST.
-const genre_update_post = expressAsyncHandler(async (req, res, next) => {
-	res.send('NOT IMPLEMENTED: Genre update POST');
-});
+const genre_update_post = [
+
+	// validation and sanitization
+	body('name', 'Genre must contain at least three characters')
+		.trim()
+		.isLength({ min: 3 })
+		.escape(),
+
+	// process the request
+	expressAsyncHandler(async (req, res, next) => {
+
+		const errors = validationResult(req);
+		const validatedReq = matchedData(req);
+		const genre = new Genre({ name: validatedReq.name, _id: req.params.id });
+
+		if (!errors.isEmpty()) {
+			return res.render("genre_form", {
+				title: "Update Genre",
+				genre: genre,
+				errors: errors.array() 
+			})
+		} else {
+
+			const updatedGenre = await Genre.findByIdAndUpdate(req.params.id, genre, {});
+			res.redirect(updatedGenre.url);
+		}
+	
+	})
+];
 
 const genre_controller = {
 	genre_list,

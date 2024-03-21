@@ -18,7 +18,7 @@ block content
             input#imprint.form-control(type="text" name="imprint" placeholder="Publisher and date info" required value=(book_instance===undefined ? '' : book_instance.imprint))
         div.form-group
             label(for="due_back") Due back date: 
-                input#due_back.form-control(type="date" name="due_back" value=(book_instance===undefined ? '' : book_instance.due_back)) 
+                input#due_back.form-control(type="date" name="due_back" value=(book_instance===undefined ? '' : bookinstance.due_back_yyyy_mm_dd)) 
         div.form-group
             label(for="status") Status: 
                 select#status.form-control(name="status" required)
