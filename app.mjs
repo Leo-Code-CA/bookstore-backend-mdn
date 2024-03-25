@@ -6,6 +6,9 @@ import logger from 'morgan';
 import router from './routes/index.mjs';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
+import compression from 'compression';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mongoDB = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/bookstoredb';
@@ -21,6 +24,26 @@ mongoose
 	});
 
 const app = express();
+
+// compress all the routes
+app.use(compression());
+
+// protect against well known vulnerabilities
+app.use(
+	helmet.contentSecurityPolicy({
+		directives: {
+			'script-src': ["'self'", 'code.jquery.com', 'cdn.jsdelivr.net'],
+		},
+	})
+);
+
+// add rate limits to API routes
+const limiter = rateLimit({
+	windowMs: 1 * 60 * 1000,
+	max: 50,
+});
+
+app.use(limiter);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -51,6 +74,3 @@ app.use(function (err, req, res, next) {
 });
 
 export default app;
-
-// CHALLENGE tutorial part 6 - UPDATE BookInstance (all the other delete and update are done)
-// https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/forms
