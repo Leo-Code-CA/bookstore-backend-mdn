@@ -67,8 +67,6 @@ const author_create_post = [
 	// process the request
 	expressAsyncHandler(async (req, res, next) => {
 
-		console.log(req.body)
-
 		const errors = validationResult(req.body);
 
 		if (!errors.isEmpty()) {
@@ -83,8 +81,6 @@ const author_create_post = [
 		}
 
 		const validatedReqData = matchedData(req)
-
-		console.log(validatedReqData)
 
 		const author = new Author({
 			first_name: validatedReqData.first_name,

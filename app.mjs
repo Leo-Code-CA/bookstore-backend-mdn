@@ -8,10 +8,11 @@ import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const mongoDB = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/bookstoredb';
 
 mongoose
 	.set('strictQuery', false)
-	.connect('mongodb://127.0.0.1:27017/bookstoredb')
+	.connect(mongoDB)
 	.then(() => {
 		console.log('Connected to the database');
 	})
