@@ -74,3 +74,8 @@ app.use(function (err, req, res, next) {
 });
 
 export default app;
+
+// NEXT STEPS:
+// check docs: https://www.passportjs.org/tutorials/password/
+// check docs: https://www.npmjs.com/package/connect-mongo
+// create authentication system with mongo store and passport

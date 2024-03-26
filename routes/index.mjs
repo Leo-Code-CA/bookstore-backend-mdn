@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import homeRouter from './home.mjs';
-import usersRouter from './users.mjs';
 import catalogRouter from './catalog/index.mjs';
+import usersRouter from './users/index.mjs';
 
 const router = Router();
 
