@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { DateTime } from 'luxon';
 
-const BookInstanceSchema = mongoose.Schema({
+const BookInstanceSchema = new mongoose.Schema({
 	book: {
 		type: Schema.Types.ObjectId,
 		required: true,

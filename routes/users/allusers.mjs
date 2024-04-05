@@ -1,15 +1,12 @@
 import { Router } from 'express';
+import AllUsersController from './../../controllers/users/allUsersController.mjs';
 
 const router = Router();
 
 // GET request - login endpoint
-router.get('/auth', (req, res, next) => {
-	res.send('GET request login endpoint - NOT SET UP YET');
-});
+router.get('/login', AllUsersController.users_login_get);
 
 // POST request - login endpoint
-router.post('/auth', (req, res, next) => {
-	res.send('POST request login enpoint - NOT SET UP YET');
-});
+router.post('/login', AllUsersController.users_login_post);
 
 export default router;

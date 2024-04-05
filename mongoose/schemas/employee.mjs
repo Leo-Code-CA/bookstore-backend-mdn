@@ -1,0 +1,40 @@
+import mongoose, { Schema } from 'mongoose';
+
+const EmployeeSchema = new mongoose.Schema({
+	position: {
+		type: String,
+		enum: ['part-time associate', 'full-time associate', 'assistant manager', 'manager'],
+		required: true,
+	},
+	location: {
+		type: String,
+		enum: ['Toronto', 'Vancouver', 'Montreal', 'Calgary', 'Edmonton'],
+		required: true,
+	},
+	books_added: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Book',
+		},
+	],
+	autors_added: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Author',
+		},
+	],
+	genres_added: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Genre',
+		},
+	],
+	book_instances_added: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'BookInstance',
+		},
+	],
+});
+
+export const Employee = mongoose.model('Employee', EmployeeSchema);

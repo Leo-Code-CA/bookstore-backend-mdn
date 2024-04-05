@@ -1,5 +1,5 @@
-import { BookInstance } from './../mongoose/schemas/bookInstance.mjs';
-import { Book } from './../mongoose/schemas/book.mjs';
+import { BookInstance } from '../../mongoose/schemas/bookInstance.mjs';
+import { Book } from '../../mongoose/schemas/book.mjs';
 import expressAsyncHandler from 'express-async-handler';
 import { body, validationResult, matchedData } from 'express-validator';
 

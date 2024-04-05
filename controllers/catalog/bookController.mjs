@@ -1,9 +1,9 @@
 import expressAsyncHandler from 'express-async-handler';
 import { body, validationResult, matchedData } from 'express-validator';
-import { Book } from './../mongoose/schemas/book.mjs';
-import { Author } from './../mongoose/schemas/author.mjs';
-import { BookInstance } from './../mongoose/schemas/bookInstance.mjs';
-import { Genre } from './../mongoose/schemas/genre.mjs';
+import { Book } from '../../mongoose/schemas/book.mjs';
+import { Author } from '../../mongoose/schemas/author.mjs';
+import { BookInstance } from '../../mongoose/schemas/bookInstance.mjs';
+import { Genre } from '../../mongoose/schemas/genre.mjs';
 
 const index = expressAsyncHandler(async (req, res, next) => {
 	// Get details of books, book instances, authors and genre counts (in parallel)
@@ -43,18 +43,12 @@ const book_list = expressAsyncHandler(async (req, res, next) => {
 const book_detail = expressAsyncHandler(async (req, res, next) => {
 	// console.log(req.params.id)
 	const [book, bookInstances] = await Promise.all([
-		Book
-		.findById(req.params.id)
-		.populate('author')
-		.populate('genre')
-		.exec(),
-		BookInstance
-		.find({ book: req.params.id })
-		.exec()
-	])
+		Book.findById(req.params.id).populate('author').populate('genre').exec(),
+		BookInstance.find({ book: req.params.id }).exec(),
+	]);
 
 	if (!book) {
-		const err = new Error("Book not found!");
+		const err = new Error('Book not found!');
 		err.status = 404;
 		return next(err);
 	}
@@ -62,29 +56,27 @@ const book_detail = expressAsyncHandler(async (req, res, next) => {
 	res.render('book_detail', {
 		title: book.title,
 		book: book,
-		book_instances: bookInstances
-	})
+		book_instances: bookInstances,
+	});
 });
-
 
 // Display book create form on GET.
 const book_create_get = expressAsyncHandler(async (req, res, next) => {
 	const [allAuthors, allGenres] = await Promise.all([
-		Author.find().sort({ family_name: 1}).exec(),
-		Genre.find().sort({ name: 1 }).exec()
+		Author.find().sort({ family_name: 1 }).exec(),
+		Genre.find().sort({ name: 1 }).exec(),
 	]);
 
-	res.render('book_form',  {
-		title: "Create Book",
+	res.render('book_form', {
+		title: 'Create Book',
 		authors: allAuthors,
-		genres: allGenres
-	})
+		genres: allGenres,
+	});
 });
 
 // Handle book create on POST.
 const book_create_post = [
-
-	// convert genre to an array 
+	// convert genre to an array
 	(req, res, next) => {
 		if (!Array.isArray(req.body.genre)) {
 			req.body.genre = typeof req.body.genre === 'undefined' ? [] : [req.body.genre];
@@ -93,27 +85,14 @@ const book_create_post = [
 	},
 
 	// validate and sanitize
-	body("title")
-		.trim()
-		.isLength({ min: 1 })
-		.escape(),
-	body("author", "Author must not be empty")
-		.trim()
-		.isLength({ min: 1 })
-		.escape(),
-	body("summary", "Summary must not be empty")
-		.trim()
-		.isLength({ min: 1 })
-		.escape(),
-	body("isbn", "ISBN must not be empty")
-		.trim()
-		.isLength({ min: 1 })
-		.escape(),
-	body("genre.*").escape(),
+	body('title').trim().isLength({ min: 1 }).escape(),
+	body('author', 'Author must not be empty').trim().isLength({ min: 1 }).escape(),
+	body('summary', 'Summary must not be empty').trim().isLength({ min: 1 }).escape(),
+	body('isbn', 'ISBN must not be empty').trim().isLength({ min: 1 }).escape(),
+	body('genre.*').escape(),
 
 	// process the request
 	expressAsyncHandler(async (req, res, next) => {
-
 		// console.log(req.body)
 
 		const errors = validationResult(req);
@@ -125,69 +104,67 @@ const book_create_post = [
 			author: validatedResult.author,
 			summary: validatedResult.summary,
 			isbn: validatedResult.isbn,
-			genre: validatedResult.genre
-		})
+			genre: validatedResult.genre,
+		});
 
 		if (!errors.isEmpty()) {
-
 			const [allAuthors, allGenres] = await Promise.all([
-				Author.find().sort({ family_name: 1}).exec(),
-				Genre.find().sort({ name: 1 }).exec()
+				Author.find().sort({ family_name: 1 }).exec(),
+				Genre.find().sort({ name: 1 }).exec(),
 			]);
 
 			for (const genre of allGenres) {
 				// console.log(book.genre)
 				// console.log(genre)
 				if (book.genre.includes(genre._id)) {
-					genre.checked = true
+					genre.checked = true;
 				}
 			}
 
 			return res.render({
-				title: "Create Book",
+				title: 'Create Book',
 				author: allAuthors,
 				genre: allGenres,
 				book: book,
-				errors: errors.array()
-			})
+				errors: errors.array(),
+			});
 		}
 
 		await book.save();
 
 		res.redirect(book.url);
-	
-	})
-]
+	}),
+];
 
 // Display book delete form on GET.
 const book_delete_get = expressAsyncHandler(async (req, res, next) => {
 	const [book, allBookInstances] = await Promise.all([
 		Book.findById(req.params.id).exec(),
-		BookInstance.find({ book: req.params.id }, "imprint status").exec()
-	])
+		BookInstance.find({ book: req.params.id }, 'imprint status').exec(),
+	]);
 
 	if (book === null) return res.redirect('/catalog/books');
 
-	res.render("book_delete", {
+	res.render('book_delete', {
 		title: 'Delete Book',
 		book: book,
-		book_instances: allBookInstances
-	})
+		book_instances: allBookInstances,
+	});
 });
 
 // Handle book delete on POST.
 const book_delete_post = expressAsyncHandler(async (req, res, next) => {
 	const [book, allBookInstances] = await Promise.all([
 		Book.findById(req.params.id).exec(),
-		BookInstance.find({ book: req.params.id }, "imprint status").exec()
+		BookInstance.find({ book: req.params.id }, 'imprint status').exec(),
 	]);
 
 	if (allBookInstances.length > 0) {
-		return res.render("book_delete", {
-			title: "Delete Book",
+		return res.render('book_delete', {
+			title: 'Delete Book',
 			book: book,
-			book_instances: allBookInstances
-		})
+			book_instances: allBookInstances,
+		});
 	} else {
 		await Book.findByIdAndDelete(req.body.bookid);
 		res.redirect('/catalog/books');
@@ -197,12 +174,12 @@ const book_delete_post = expressAsyncHandler(async (req, res, next) => {
 // Display book update form on GET.
 const book_update_get = expressAsyncHandler(async (req, res, next) => {
 	const [book, allAuthors, allGenres] = await Promise.all([
-		Book.findById(req.params.id).populate("author").exec(),
+		Book.findById(req.params.id).populate('author').exec(),
 		Author.find().sort({ family_name: 1 }).exec(),
-		Genre.find().sort({ name: 1 }).exec()
+		Genre.find().sort({ name: 1 }).exec(),
 	]);
 
-	console.log(book, allAuthors, allGenres)
+	console.log(book, allAuthors, allGenres);
 
 	if (book === null) {
 		const error = new Error('Book not found.');
@@ -210,46 +187,32 @@ const book_update_get = expressAsyncHandler(async (req, res, next) => {
 		next(error);
 	}
 
-	allGenres.forEach(genre => book.genre.includes(genre._id) ? genre.checked = true : null);
+	allGenres.forEach(genre => (book.genre.includes(genre._id) ? (genre.checked = true) : null));
 
-	res.render("book_form", {
+	res.render('book_form', {
 		title: 'Update Book',
 		book: book,
 		genres: allGenres,
-		authors: allAuthors
+		authors: allAuthors,
 	});
 });
 
 // Handle book update on POST.
 const book_update_post = [
-
 	// convert the genre to an array
 	(req, res, next) => {
 		if (!Array.isArray(req.body.genre)) {
-			req.body.genre = typeof req.body.genre === 'undefined' ? [] 
-			: [req.body.genre];
+			req.body.genre = typeof req.body.genre === 'undefined' ? [] : [req.body.genre];
 		}
 		next();
 	},
 
 	// validation and sanitization
-	body("title", "Title must not be empty.")
-		.trim()
-		.isLength({ min: 1 })
-		.escape(),
-	body("author", "Author must not be empty.")
-		.trim()
-		.isLength({ min: 1 })
-		.escape(),
-	body("summary", "Summary must not be empty.")
-		.trim()
-		.isLength({ min: 1 })
-		.escape(),
-	body("isbn", "ISBN must not be empty")
-		.trim()
-		.isLength({ min: 1 })
-		.escape(),
-	body("genre.*").escape(),
+	body('title', 'Title must not be empty.').trim().isLength({ min: 1 }).escape(),
+	body('author', 'Author must not be empty.').trim().isLength({ min: 1 }).escape(),
+	body('summary', 'Summary must not be empty.').trim().isLength({ min: 1 }).escape(),
+	body('isbn', 'ISBN must not be empty').trim().isLength({ min: 1 }).escape(),
+	body('genre.*').escape(),
 
 	// process the request
 	expressAsyncHandler(async (req, res, next) => {
@@ -257,45 +220,41 @@ const book_update_post = [
 		const validatedResult = matchedData(req);
 
 		console.log(validatedResult);
-		console.log(req.params)
-		console.log(req.body)
+		console.log(req.params);
+		console.log(req.body);
 
 		const book = new Book({
 			title: validatedResult.title,
 			author: validatedResult.author,
 			summary: validatedResult.summary,
 			isbn: validatedResult.isbn,
-			genre: typeof validatedResult.genre === "undefined" ? [] : validatedResult.genre,
-			_id: req.params.id
-		})
+			genre: typeof validatedResult.genre === 'undefined' ? [] : validatedResult.genre,
+			_id: req.params.id,
+		});
 
 		if (!errors.isEmpty()) {
-
 			const [allAuthors, allGenres] = await Promise.all([
 				Author.find().sort({ family_name: 1 }).exec(),
-				Genre.find().sort({ name: 1 }).exec()
-			])
+				Genre.find().sort({ name: 1 }).exec(),
+			]);
 
 			for (const genre of allGenres) {
 				if (book.genre.indexOf(genre._id) > -1) genre.checked = 'true';
 			}
 
-			return res.render("book_form", {
-				title: "Update Book",
+			return res.render('book_form', {
+				title: 'Update Book',
 				authors: allAuthors,
 				genres: allGenres,
 				book: book,
-				errors: errors.array()
+				errors: errors.array(),
 			});
-
 		} else {
 			const updatedBook = await Book.findByIdAndUpdate(req.params.id, book, {});
 
 			res.redirect(updatedBook.url);
 		}
-
-
-	})
+	}),
 ];
 
 const book_controller = {

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import BookInstanceController from './../../controllers/bookInstanceController.mjs';
+import BookInstanceController from '../../controllers/catalog/bookInstanceController.mjs';
 
 const router = Router();
 
