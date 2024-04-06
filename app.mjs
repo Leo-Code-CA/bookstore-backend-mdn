@@ -67,6 +67,9 @@ app.use(
 		secret: 'locallibrarysecret',
 		saveUninitialized: false,
 		resave: false,
+		cookie: {
+			maxAge: 60000 * 60,
+		},
 		store: MongoStore.create({
 			client: mongoose.connection.getClient(),
 		}),
@@ -79,7 +82,6 @@ app.use(passport.session());
 
 // routes
 app.use(router);
-app.use(passport.authenticate('session'));
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -98,8 +100,3 @@ app.use(function (err, req, res, next) {
 });
 
 export default app;
-
-// NEXT STEPS:
-// check docs: https://www.passportjs.org/tutorials/password/
-// check docs: https://www.npmjs.com/package/connect-mongo
-// create authentication system with mongo store and passport

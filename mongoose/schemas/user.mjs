@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import mongoose from 'mongoose';
 // import { EmployeeSchema } from './employee.mjs';
 // import { MemberSchema } from './member.mjs';
@@ -27,6 +28,10 @@ const UserSchema = new mongoose.Schema({
 		default: new Date(),
 		required: true,
 	},
+});
+
+UserSchema.virtual('jd').get(function () {
+	return DateTime.fromJSDate(this.joining_date).toLocaleString(DateTime.DATE_MED);
 });
 
 export const User = mongoose.model('User', UserSchema);

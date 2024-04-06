@@ -1,0 +1,18 @@
+extends sidebar_layout 
+
+block sidebar
+    ul(class='sidebar-nav')
+        li
+            a(href='/catalog') Home
+        li
+            a(href='/catalog/books') All books
+        li
+            a(href='/catalog/authors') All authors
+        li
+            a(href='/catalog/genres') All genres
+        li
+            a(href='/catalog/bookinstances') All book-instances
+        li
+
+block content 
+    h1 Welcome to the member portal!
