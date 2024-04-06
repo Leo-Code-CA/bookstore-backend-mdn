@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { Employee } from './employee.mjs';
-import { Member } from './member.mjs';
+// import { EmployeeSchema } from './employee.mjs';
+// import { MemberSchema } from './member.mjs';
 
 const UserSchema = new mongoose.Schema({
 	username: {
@@ -8,12 +8,13 @@ const UserSchema = new mongoose.Schema({
 		required: true,
 		minLength: 5,
 		maxLength: 20,
+		unique: true,
 	},
 	password: {
 		type: String,
 		required: true,
 		minLength: 8,
-		maxLength: 30,
+		maxLength: 100,
 	},
 	user_type: {
 		type: String,
@@ -26,8 +27,9 @@ const UserSchema = new mongoose.Schema({
 		default: new Date(),
 		required: true,
 	},
-	employee_profile: Employee,
-	member_profile: Member,
 });
 
 export const User = mongoose.model('User', UserSchema);
+
+// employee_profile: EmployeeSchema,
+// member_profile: MemberSchema,

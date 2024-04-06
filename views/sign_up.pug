@@ -1,0 +1,25 @@
+extends no_sidebar_layout 
+
+block content 
+    h1(class='text-center')= title 
+
+    form(method='POST' action='/users/signup' class='flex-fill d-flex flex-column justify-content-center align-items-center gap-3')
+        div.form-group.w-25.d-flex.flex-column.gap-1
+            label(for="username") Username: 
+                input#username.form-control(type='text' placeholder='Your username' name='username' required value=(user===undefined ? '' : user.username))
+        div.form-group.w-25.d-flex.flex-column.gap-1
+            label(for="password") Password: 
+                input#password.form-control(type="text" placeholder='Your password' name='password' required value=(user===undefined ? '' : user.password))
+        div.form-group.w-25.d-flex.flex-column.gap-1
+            label Profile type: 
+            div 
+                for user_type in ['member', 'employee'] 
+                    div(style='display: inline; padding-right:10px;')
+                        input.checkbox-input(type="checkbox" name='user_type' id=user_type value=user_type)
+                        label(for=user_type) &nbsp;#{user_type}
+        button.btn.btn-primary.w-25(type='submit') Submit 
+
+    if errors 
+        ul 
+            for error in errors 
+                li #{error.msg}

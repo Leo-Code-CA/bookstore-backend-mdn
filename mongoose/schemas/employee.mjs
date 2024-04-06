@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-const EmployeeSchema = new mongoose.Schema({
+export const EmployeeSchema = new mongoose.Schema({
 	position: {
 		type: String,
 		enum: ['part-time associate', 'full-time associate', 'assistant manager', 'manager'],
@@ -36,5 +36,3 @@ const EmployeeSchema = new mongoose.Schema({
 		},
 	],
 });
-
-export const Employee = mongoose.model('Employee', EmployeeSchema);

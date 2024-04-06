@@ -9,10 +9,15 @@ import mongoose from 'mongoose';
 import compression from 'compression';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import passport from 'passport';
+import MongoStore from 'connect-mongo';
+import session from 'express-session';
+import './strategies/local-strategy.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mongoDB = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/bookstoredb';
 
+// connect to mongoDB
 mongoose
 	.set('strictQuery', false)
 	.connect(mongoDB)
@@ -23,6 +28,7 @@ mongoose
 		console.log(err);
 	});
 
+// create Express app
 const app = express();
 
 // compress all the routes
@@ -55,7 +61,25 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// express session
+app.use(
+	session({
+		secret: 'locallibrarysecret',
+		saveUninitialized: false,
+		resave: false,
+		store: MongoStore.create({
+			client: mongoose.connection.getClient(),
+		}),
+	})
+);
+
+// passport js
+app.use(passport.initialize());
+app.use(passport.session());
+
+// routes
 app.use(router);
+app.use(passport.authenticate('session'));
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

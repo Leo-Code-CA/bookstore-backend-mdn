@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-const MemberSchema = new mongoose.Schema({
+export const MemberSchema = new mongoose.Schema({
 	membership_status: {
 		type: String,
 		enum: ['newcomer', 'regular', 'veteran'],
@@ -15,5 +15,3 @@ const MemberSchema = new mongoose.Schema({
 	],
 	_id: false,
 });
-
-export const Member = mongoose.model('Member', MemberSchema);

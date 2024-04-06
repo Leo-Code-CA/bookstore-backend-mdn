@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"engines": {
-		"node": "21.4.0"
+		"node": ">=21.4.0"
 	},
 	"scripts": {
 		"start": "node ./bin/www",
@@ -14,12 +14,15 @@
 		"populate:db": "node populatedb 'mongodb://127.0.0.1:27017/bookstoredb'"
 	},
 	"dependencies": {
+		"bcrypt": "^5.1.1",
 		"compression": "^1.7.4",
+		"connect-mongo": "^5.1.0",
 		"cookie-parser": "~1.4.4",
 		"debug": "~2.6.9",
 		"express": "^4.18.3",
 		"express-async-handler": "^1.2.0",
 		"express-rate-limit": "^7.2.0",
+		"express-session": "^1.18.0",
 		"express-validator": "^7.0.1",
 		"helmet": "^7.1.0",
 		"http-errors": "~1.6.3",
