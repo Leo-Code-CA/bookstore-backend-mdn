@@ -17,6 +17,14 @@ block content
                     div(style='display: inline; padding-right:10px;')
                         input.checkbox-input(type="checkbox" name='user_type' id=user_type value=user_type)
                         label(for=user_type) &nbsp;#{user_type}
+
+        div.form-group.w-25.d-flex.flex-column.gap-1
+            label(for='name') Name:
+                input#name.form-control(type='text' placeholder:'Your name' name='name')
+        div.form-group.w-25.d-flex.flex-column.gap-1
+            label(for='position') Position:
+                input#position.form-control(type='text' placeholder:'Your position' name='position')
+
         button.btn.btn-primary.w-25(type='submit') Submit 
 
     if errors 

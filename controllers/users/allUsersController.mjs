@@ -3,7 +3,7 @@ import passport from 'passport';
 import './../../strategies/local-strategy.mjs';
 import { body, matchedData, validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
-import { User } from '../../mongoose/schemas/user.mjs';
+import { User, EmployeeUser, MemberUser } from '../../mongoose/schemas/user.mjs';
 
 // Display login form form on GET.
 const users_login_get = (req, res, next) => {
@@ -99,23 +99,46 @@ const users_sign_up_post = [
 		.escape(),
 	body('password', 'Password must contain at least 8 characters').notEmpty().isString().escape(),
 	body('user_type').escape(),
+	body('position').trim().isString(),
 
 	// create the new user and save it into the db
 	async (req, res, next) => {
+		console.log(req.body);
 		const result = validationResult(req);
 		if (!result.isEmpty()) return res.status(400).send(result.array());
 
 		try {
 			const data = matchedData(req);
+			console.log(data);
 			// check if the user already exists in the db
-			const findUser = await User.findOne({ username: data.username });
-			if (findUser) return res.status(409).send('user already exists!');
+			const checkUsers = await Promise.all([
+				EmployeeUser.findOne({ username: data.username }),
+				MemberUser.findOne({ username: data.username }),
+			]);
+
+			const findUser = checkUsers.filter(user => {
+				console.log(user);
+				return user;
+			});
+			if (findUser.length !== 0) return res.status(409).send('user already exists!');
 			// hash the password
 			data.password = await bcrypt.hash(data.password, 10);
+			// decide what kind of user to create and save to the db
+			if (data.user_type === 'member') {
+				const newMember = new MemberUser(data);
+				await newMember.save();
+				next();
+			} else if (data.user_type === 'employee') {
+				const newEmployee = new EmployeeUser(data);
+				await newEmployee.save();
+				next();
+			}
+
+			// OLD WORKING VERSION
 			// create the new user and save it into the db
-			const newUser = new User(data);
-			await newUser.save();
-			next();
+			// const newUser = new User(data);
+			// await newUser.save();
+			// next();
 		} catch (error) {
 			console.log(error);
 			return res.sendStatus(400);
@@ -128,6 +151,7 @@ const users_sign_up_post = [
 		const {
 			user: { user_type, _id },
 		} = req;
+		console.log(req.user.jd);
 		if (user_type === 'member') {
 			return res.redirect(`/users/portal/member/${_id}`);
 		} else if (user_type === 'employee') {

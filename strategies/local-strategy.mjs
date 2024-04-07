@@ -1,17 +1,23 @@
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import { User } from '../mongoose/schemas/user.mjs';
+import { User, MemberUser, EmployeeUser } from '../mongoose/schemas/user.mjs';
 import bcrypt from 'bcrypt';
 
 passport.serializeUser((user, done) => {
-	done(null, user.id);
+	done(null, { id: user.id, kind: user.user_type });
 });
 
-passport.deserializeUser(async (userId, done) => {
+passport.deserializeUser(async ({ id, kind }, done) => {
 	try {
-		const findUser = await User.findById(userId);
-		if (!findUser) throw new Error('User not found');
-		done(null, findUser);
+		if (kind === 'employee') {
+			const findEmployee = await EmployeeUser.findById(id);
+			if (!findEmployee) throw new Error('Employee not found');
+			done(null, findEmployee);
+		} else {
+			const findMember = await MemberUser.findById(id);
+			if (!findMember) throw new Error('Member not found');
+			done(null, findMember);
+		}
 	} catch (error) {
 		done(error, null);
 	}
@@ -22,12 +28,20 @@ export default passport.use(
 		try {
 			console.log(`username: ${username}, password: ${password}`);
 			// check if the user exists in the db
-			const findUser = await User.findOne({ username: username });
-			if (!findUser) return done(null, false, { error: 'Incorrect username' });
+			const checkUsers = await Promise.all([
+				EmployeeUser.findOne({ username: username }),
+				MemberUser.findOne({ username: username }),
+			]);
+			console.log('CheckUsers is:');
+			console.log(checkUsers);
+
+			const findUser = checkUsers.filter(user => user);
+
+			if (findUser.length === 0) return done(null, false, { error: 'Incorrect username' });
 			// check if the passwords match
-			const passwordsMatch = await bcrypt.compare(password, findUser.password);
+			const passwordsMatch = await bcrypt.compare(password, findUser[0].password);
 			if (passwordsMatch) {
-				return done(null, findUser);
+				return done(null, findUser[0]);
 			} else {
 				return done(null, false, { error: 'Incorrect password' });
 			}

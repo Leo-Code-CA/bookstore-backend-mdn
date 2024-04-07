@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
-import mongoose from 'mongoose';
-// import { EmployeeSchema } from './employee.mjs';
-// import { MemberSchema } from './member.mjs';
+import mongoose, { Schema } from 'mongoose';
+import { EmployeeSchema } from './employee.mjs';
+import { MemberSchema } from './member.mjs';
 
 const UserSchema = new mongoose.Schema({
 	username: {
@@ -36,5 +36,5 @@ UserSchema.virtual('jd').get(function () {
 
 export const User = mongoose.model('User', UserSchema);
 
-// employee_profile: EmployeeSchema,
-// member_profile: MemberSchema,
+export const EmployeeUser = User.discriminator('Employee', EmployeeSchema);
+export const MemberUser = User.discriminator('Member', MemberSchema);

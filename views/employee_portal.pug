@@ -23,5 +23,18 @@ block sidebar
         li
             a(href='/catalog/bookinstance/create') Create new book instance (copy)
 
+    div(class='d-flex w-100 gap-2')
+        a(class='btn btn-secondary flex-fill' href=`/users/portal/admin/${user._id}`) Portal
+        button(class='btn btn-secondary flex-fill' type='button') Logout
+
 block content 
     h1 Welcome to the employee portal #{user.username}!
+
+    //- div(class='d-flex flex-column gap-3 border border-dark')
+    //-     h2 My Employee Profile 
+    //-     dl 
+    //-         dt Full Name: 
+    //-         dd #{user.full_name}
+    //-     dl 
+    //-         dt Position: 
+    //-         dd #{user.position}

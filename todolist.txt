@@ -1,0 +1,13 @@
+Summary:
+
+// Global user schema is done (for both member and employee)
+// Used discriminator in user's mongoose schema to differenciate different kind of users
+// Started to create different schemas for both kind of users
+// Started to update the views of the signup page with all the fiels needed to fill the users profils
+
+To do:
+// Finish the MemberUser Schema and the EmployeeMember Schema
+// Add all the necessary fiels to the sign up get view so users can fill what they need to in order to be validated and be able to create an account
+// Cleanup the code
+// Keep working on the protected employee portal page
+// Start the member portal page
