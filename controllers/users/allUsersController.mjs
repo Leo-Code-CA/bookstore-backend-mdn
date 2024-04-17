@@ -4,6 +4,7 @@ import './../../strategies/local-strategy.mjs';
 import { body, matchedData, validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import { User, EmployeeUser, MemberUser } from '../../mongoose/schemas/user.mjs';
+import { Genre } from './../../mongoose/schemas/genre.mjs';
 
 // Display login form form on GET.
 const users_login_get = (req, res, next) => {
@@ -80,11 +81,14 @@ const users_log_out_post = (req, res, next) => {
 };
 
 // Display sign up form on GET
-const users_sign_up_get = (req, res, next) => {
+const users_sign_up_get = expressAsyncHandler(async (req, res, next) => {
+	const allGenres = await Genre.find().sort({ name: 1 }).exec();
+
 	res.render('sign_up', {
 		title: 'Sign Up Page',
+		genres: allGenres,
 	});
-};
+});
 
 // Handle user profile creation on POST
 const users_sign_up_post = [

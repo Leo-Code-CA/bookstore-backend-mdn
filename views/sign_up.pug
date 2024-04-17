@@ -18,12 +18,46 @@ block content
                         input.checkbox-input(type="checkbox" name='user_type' id=user_type value=user_type)
                         label(for=user_type) &nbsp;#{user_type}
 
-        div.form-group.w-25.d-flex.flex-column.gap-1
-            label(for='name') Name:
-                input#name.form-control(type='text' placeholder:'Your name' name='name')
-        div.form-group.w-25.d-flex.flex-column.gap-1
-            label(for='position') Position:
-                input#position.form-control(type='text' placeholder:'Your position' name='position')
+        div.employee-form.w-25.d-flex.flex-column.gap-2
+            div.form-group.d-flex.flex-column.gap-1
+                label(for='name') Full Name:
+                    input#name.form-control(type='text' placeholder:'Your first and last name' name='name')
+            div.form-group.d-flex.flex-column.gap-1
+                label(for='position') Position:
+                    select#position(name="position" required) 
+                        option(value="") -- Please select your position --
+                            each val in ['Librarian', 'Stockist', 'Assistant Manager', 'Branch Manager', 'Global Manager']
+                                option(value=val)= val
+            div.form-group.d-flex.flex-column.gap-1
+                label(for='location') Location: 
+                    select#location(name="location" required) 
+                        option(value="") -- Please select a location --
+                            each val in ['Toronto', 'Vancouver', 'Montreal', 'Calgary', 'Edmonton']
+                                option(value=val)= val
+
+        div.member-form.w-25.d-flex.flex-column.gap-2
+            div.form-group.d-flex.flex-column.gap-1
+                label(for='membership') Membership Type:
+                    select#membership(name="membership" required) 
+                        option(value="") -- Please select your membership --
+                            each val in ['Newcomer', 'Regular', 'Veteran']
+                                option(value=val)= val
+            div.form-group.d-flex.flex-column.gap-1
+                label(for='localBranch') Local Branch: 
+                    select#localBranch(name="localBranch" required) 
+                        option(value="") -- Please select a branch --
+                            each val in ['Toronto', 'Vancouver', 'Montreal', 'Calgary', 'Edmonton']
+                                option(value=val)= val
+            div.form-group.d-flex.flex-column.gap-1
+                label Favorite Genres: 
+                div 
+                    for genre in genres 
+                        div(style='display: inline; padding-right:10px;')
+                            if genre.checked
+                                input.checkbox-input(type="checkbox" name='genre' id=genre._id value=genre._id checked)
+                            else 
+                                input.checkbox-input(type="checkbox" name='genre' id=genre._id value=genre._id)
+                            label(for=genre._id) #{genre.name}
 
         button.btn.btn-primary.w-25(type='submit') Submit 
 

@@ -35,6 +35,5 @@ UserSchema.virtual('jd').get(function () {
 });
 
 export const User = mongoose.model('User', UserSchema);
-
 export const EmployeeUser = User.discriminator('Employee', EmployeeSchema);
 export const MemberUser = User.discriminator('Member', MemberSchema);
